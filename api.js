@@ -243,6 +243,7 @@ app.get(
 //method only for logged in users
 //returns all items posted by a specific user identified by userId
 //optional - a logged in user should be able to view his/her postings
+//not in documentation
 app.get('/itemsJWT', 
   passport.authenticate('jwt', { session: false }),
   (req, res) => 
@@ -292,8 +293,8 @@ app.post('/itemsJWT',
     else 
     {
       //bad request otherwise
-      return res.status(404).json({
-        "message": "Not found"
+      return res.status(401).json({
+        "message": "Bad request"
       });
     }  
 })
