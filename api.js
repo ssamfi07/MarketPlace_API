@@ -124,23 +124,17 @@ app.get('/httpBasicProtectedResource',
 app.post('/registerBasic',
         (req, res) => 
 {
-  if('username' in req.body == false ) 
+  if(!req.body.username) 
   {
-    res.status(400);
-    res.json({status: "Missing username from body"})
-    return;
+    return res.status(400).json({status: "Missing username from body"});
   }
-  if('password' in req.body == false ) 
+  if(!req.body.password) 
   {
-    res.status(400);
-    res.json({status: "Missing password from body"})
-    return;
+    return res.status(400).json({status: "Missing password from body"});
   }
-  if('email' in req.body == false ) 
+  if(!req.body.email) 
   {
-    res.status(400);
-    res.json({status: "Missing email from body"})
-    return;
+    return res.status(400).json({status: "Missing email from body"});
   }
 
   //hash the password
@@ -150,7 +144,9 @@ app.post('/registerBasic',
   users.addUser(req.body.username, hashedPassword, req.body.name, req.body.birthDate, req.body.email, req.body.address);
 
   //send the created status
-  res.send('Created');
+  return res.status(201).json({
+    "message": "Created."
+})
 });
 
 /*********************************************
@@ -209,7 +205,7 @@ app.get(
 );
 
 //log in 
-app.get(
+app.post(
   '/loginForJWT',
   passport.authenticate('basic', { session: false }),
   (req, res) => 
@@ -231,7 +227,7 @@ app.get(
 
     const token = jwt.sign(payload, jwtSecretKey.secret, options);
 
-    return res.json({ token });
+    return res.status(200).json({ token });
 })
 
 
@@ -278,22 +274,22 @@ app.post('/itemsJWT',
     console.log('POST /itemsJWT');
     console.log(req.body);
     //if all required fields are introduced then we can create a new item
-    if(('title' in req.body) && ( 'description' in req.body) && ( 'category' in req.body) && ( 'location' in req.body) && ( 'images' in req.body) && ( 'price' in req.body) && ( 'deliveryType' in req.body) && ( 'sellerInfo' in req.body)) 
+    if((req.body.title) && (req.body.description) && (req.body.category) && (req.body.location) && (req.body.images) && (eq.body.price) && (req.body.deliveryType) && (req.body.sellerInfo)) 
     {
       //posting date assumed as current date in the format yyyy-mm-dd
       let today = new Date().toISOString().slice(0, 10)
       //insert the new item in the items array
       items.insertItem(req.body.title, req.body.description, req.body.category, req.body.location, req.body.images, req.body.price, today, req.body.deliveryType, req.body.sellerInfo, req.user.id);
       //display all items added by this user
-      res.json(items.getAllUserItems(req.user.id));
-      return res.status(200).json({
-        "message": "Ok"
-      });
+      //res.json(items.getAllUserItems(req.user.id));
+      return res.status(201).json({
+        "message": "Created."
+      })
     }
     else 
     {
       //bad request otherwise
-      return res.status(401).json({
+      return res.status(400).json({
         "message": "Bad request"
       });
     }  
@@ -454,7 +450,20 @@ app.get('/items/searchByPostingDate/:postingDate', (req, res) =>
   }
 })
 
+/*
 app.listen(port, () =>
 {
     console.log('Marketplace app listening at http://localhost:$(port)');
 })
+*/
+
+let apiInstance = null;
+exports.start = () => {apiInstance = app.listen(port, () => 
+  {
+    console.log('Marketplace app listening at http://localhost:$(port)');
+  })}
+
+exports.stop = () =>
+{
+    apiInstance.close();
+}
