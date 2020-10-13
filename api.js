@@ -274,7 +274,7 @@ app.post('/itemsJWT',
     console.log('POST /itemsJWT');
     console.log(req.body);
     //if all required fields are introduced then we can create a new item
-    if((req.body.title) && (req.body.description) && (req.body.category) && (req.body.location) && (req.body.images) && (eq.body.price) && (req.body.deliveryType) && (req.body.sellerInfo)) 
+    if((req.body.title) && (req.body.description) && (req.body.category) && (req.body.location) && (req.body.images) && (req.body.price) && (req.body.deliveryType) && (req.body.sellerInfo)) 
     {
       //posting date assumed as current date in the format yyyy-mm-dd
       let today = new Date().toISOString().slice(0, 10)
